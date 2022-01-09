@@ -27,6 +27,7 @@ Group:	    System Environment/Base
 License:	Apache-2.0
 URL:		http://k3s.io/k3s-selinux
 Source:     %{name}-%{version}.tar.gz
+Source1:    k3s.if
 
 BuildArch:  noarch
 BuildRequires: container-selinux >= %{container_policyver}
@@ -47,6 +48,7 @@ This package installs and sets up the SELinux policy security module for k3s.
 
 %prep
 %setup -q
+install -m 644 %{SOURCE1} policy/microos/k3s.if
 
 %build
 cd policy/microos

@@ -18,18 +18,17 @@
 %define selinux_policyver 20210716-3.1
 %define container_policyver 2.164.2-1.1
 
-Name:   k3s-selinux
-Version:	%{k3s_selinux_version}
-Release:	%{k3s_selinux_release}.sle
+Name:       k3s-selinux
+Version:	0.5.latest.1
+Release:	0
 Summary:	SELinux policy module for k3s
 
-Group:	System Environment/Base
-License:	ASL 2.0
-URL:		http://k3s.io
-Source0:	k3s.pp
-Source1:	k3s.if
+Group:	    System Environment/Base
+License:	Apache-2.0
+URL:		http://k3s.io/k3s-selinux
+Source:     %{name}-%{version}.tar.gz
 
-BuildArch: noarch
+BuildArch:  noarch
 BuildRequires: container-selinux >= %{container_policyver}
 BuildRequires: git
 BuildRequires: selinux-policy >= %{selinux_policyver}
@@ -46,11 +45,18 @@ Conflicts: rke2-selinux
 %description
 This package installs and sets up the SELinux policy security module for k3s.
 
+%prep
+%setup -q
+
+%build
+cd policy/microos
+make -f /usr/share/selinux/devel/Makefile k3s.pp
+
 %install
 install -d %{buildroot}%{_datadir}/selinux/packages
-install -m 644 %{SOURCE0} %{buildroot}%{_datadir}/selinux/packages
+install -m 644 policy/microos/k3s.pp %{buildroot}%{_datadir}/selinux/packages
 install -d %{buildroot}%{_datadir}/selinux/devel/include/contrib
-install -m 644 %{SOURCE1} %{buildroot}%{_datadir}/selinux/devel/include/contrib/
+install -m 644 policy/microos/k3s.if %{buildroot}%{_datadir}/selinux/devel/include/contrib/
 install -d %{buildroot}/etc/selinux/targeted/contexts/users/
 
 %pre
@@ -76,6 +82,4 @@ fi;
 %{_datadir}/selinux/devel/include/contrib/k3s.if
 
 %changelog
-* Mon Feb 24 2020 Darren Shepherd <darren@rancher.com> 1.0-1
-- Initial version
 
